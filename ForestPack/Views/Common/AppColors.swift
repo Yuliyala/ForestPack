@@ -10,7 +10,7 @@ extension Color {
     static let darkGray = Color(red: 0.294, green: 0.294, blue: 0.306)
     static let leafBackground = Color(red: 0.153, green: 0.216, blue: 0.153)
     static let textFieldBackground = Color(red: 0.855, green: 0.925, blue: 0.729)
-    static let textFieldText = Color(red: 0.039, green: 0.176, blue: 0.020)
+    static let textFieldText = Color(red: 10/255, green: 45/255, blue: 5/255)
     static let deleteAllBackground = Color(red: 0.424, green: 0.271, blue: 0.271)
     static let addItemText = Color(red: 0.047, green: 0.388, blue: 0.0)
 }

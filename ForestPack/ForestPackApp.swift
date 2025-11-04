@@ -4,7 +4,7 @@ import SwiftUI
 struct ForestPackApp: App {
     var body: some Scene {
         WindowGroup {
-            LaunchScreenView()
+            MainTabView()
         }
     }
 }

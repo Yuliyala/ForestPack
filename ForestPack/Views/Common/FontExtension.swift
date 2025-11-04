@@ -25,7 +25,7 @@ struct LineHeightModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .lineSpacing(lineHeight - fontSize) // lineSpacing = lineHeight - fontSize
+            .lineSpacing(lineHeight - fontSize)
     }
 }
 

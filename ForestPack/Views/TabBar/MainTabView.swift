@@ -22,8 +22,32 @@ struct MainTabView: View {
     @State private var isTabBarHidden = false
     
     var body: some View {
-        ZStack {
-            Group {
+        NavigationStack {
+            VStack(spacing: 0) {
+                ZStack {
+                    Image("gearListImg")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 293, height: 103)
+                    
+                    if selectedTab == 2 {
+                        VStack(spacing: 0) {
+                            Text("Hiking")
+                                .font(.forestPack(size: 30))
+                                .foregroundColor(.white)
+                            Text("Journal")
+                                .font(.forestPack(size: 30))
+                                .foregroundColor(.white)
+                        }
+                    } else {
+                        Text(currentTabTitle)
+                            .font(.forestPack(size: 30))
+                            .foregroundColor(.white)
+                    }
+                }
+                .padding(.top, 16)
+                .padding(.bottom, 16)
+                
                 if selectedTab == 0 {
                     GearListView()
                         .hideTabBar($isTabBarHidden)
@@ -37,10 +61,8 @@ struct MainTabView: View {
                     SettingsView()
                         .hideTabBar($isTabBarHidden)
                 }
-            }
-            
-            VStack {
-                Spacer()
+                
+                Spacer(minLength: 0)
                 
                 if !isTabBarHidden {
                     CustomTabBar(selectedTab: $selectedTab)
@@ -48,8 +70,24 @@ struct MainTabView: View {
                         .padding(.bottom, 10)
                 }
             }
+            .background(
+                Image("mainPage")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
+            )
+            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
-        .ignoresSafeArea(.keyboard, edges: .bottom)
+    }
+    
+    private var currentTabTitle: String {
+        switch selectedTab {
+        case 0: return "Gear List"
+        case 1: return "Trip Plan"
+        case 2: return "Hiking Journal"
+        case 3: return "Settings"
+        default: return ""
+        }
     }
 }
 
