@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  ForestPack
-//
-//  Created by Yuliya Lapenak on 11/4/25.
-//
-
 import SwiftUI
 
 struct ContentView: View {
