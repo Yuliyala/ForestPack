@@ -3,64 +3,115 @@ import SwiftUI
 struct DataHistoryView: View {
     @ObservedObject var viewModel: SettingsViewModel
     @Environment(\.dismiss) var dismiss
+    @Environment(\.tabBarHidden) var tabBarHidden
     @State private var showingDeleteAlert = false
     @State private var showingConfirmAlert = false
     
     var body: some View {
-        ZStack {
-            Color.leafBackground
-                .ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                WoodenHeader(title: "Data History", showBackButton: true) {
-                    dismiss()
+        GeometryReader { geometry in
+            ZStack {
+                Image("mainPage")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
+                
+                ZStack {
+                    Image("gearListImg")
+                        .resizable()
+                        .scaledToFit()
+                    
+                    Text("Data History")
+                        .font(.forestPack(size: 30))
+                        .foregroundColor(.white)
                 }
+                .frame(width: 293, height: 103)
+                .position(x: 49 + 293/2, y: 69)
+                
+                Button(action: {
+                    dismiss()
+                }) {
+                    ZStack {
+                        Color.clear
+                            .frame(width: 59, height: 59)
+                            .cornerRadius(8)
+                        
+                        Image("backIcon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 59, height: 59)
+                    }
+                }
+                .position(x: 49, y: 69)
                 
                 ScrollView {
-                    VStack(spacing: 16) {
-                        HStack {
-                            Text("Statistics & Notes")
-                                .foregroundColor(.darkGreen)
-                                .font(.system(size: 16))
-                            
-                            Spacer()
-                            
-                            Button(action: {
-                                showingDeleteAlert = true
-                            }) {
-                                Text("Clear")
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 8)
-                                    .background(Color.darkGray)
-                                    .cornerRadius(8)
+                    VStack(spacing: 0) {
+                        VStack(spacing: 6) {
+                            HStack {
+                                Image("treeIcon")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 42, height: 42)
+                                
+                                Text("Statistics & Notes")
+                                    .foregroundColor(.textFieldText)
+                                    .font(.forestPack(size: 22))
+                                    .tracking(-0.32)
+                                    .lineHeight(21)
+                                
+                                Spacer()
+                                
+                                Button(action: {
+                                    showingDeleteAlert = true
+                                }) {
+                                    Text("Clear")
+                                        .foregroundColor(.forestGreen)
+                                        .font(.forestPack(size: 22))
+                                        .tracking(-0.32)
+                                        .lineHeight(21)
+                                }
                             }
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 12)
+                            .background(Color.textFieldBackground)
+                            .cornerRadius(12)
                         }
-                        .padding()
+                        .padding(.top, 28)
+                        .padding(.bottom, 28)
+                        .padding(.leading, 21)
+                        .padding(.trailing, 21)
                         .background(Color.white)
-                        .cornerRadius(8)
-                        .padding(.horizontal)
+                        .cornerRadius(12)
+                        .padding(.horizontal, 33)
+                        .padding(.top, 140)
+                        .padding(.bottom, 100)
                     }
-                    .padding(.vertical)
                 }
             }
         }
         .navigationBarHidden(true)
-        .alert("Delete Data?", isPresented: $showingDeleteAlert) {
+        .navigationBarBackButtonHidden(true)
+        .onAppear {
+            tabBarHidden.wrappedValue = true
+        }
+        .onDisappear {
+            tabBarHidden.wrappedValue = false
+        }
+        .alert("You will delete data forever", isPresented: $showingDeleteAlert) {
             Button("Cancel", role: .cancel) {}
-            Button("OK", role: .destructive) {
+            Button("Yes", role: .destructive) {
+                viewModel.clearAllData()
                 showingConfirmAlert = true
             }
         } message: {
-            Text("Do you want to delete data from app? Are you sure you want to delete your statistics and notes history?")
+            Text("Are you sure you want to delete your statistics and notes history?")
         }
-        .alert("Data Deleted", isPresented: $showingConfirmAlert) {
-            Button("OK", role: .cancel) {
-                viewModel.clearAllData()
+        .alert("Data was deleted", isPresented: $showingConfirmAlert) {
+            Button("Ok", role: .cancel) {}
+            Button("Leave", role: .destructive) {
+                dismiss()
             }
         } message: {
-            Text("Data now deleted. You are no longer able to use your statistics and notes history.")
+            Text("You are no longer able to see your statistics and notes history.")
         }
     }
 }

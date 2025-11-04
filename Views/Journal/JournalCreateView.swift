@@ -4,9 +4,11 @@ import PhotosUI
 struct JournalCreateView: View {
     @ObservedObject var viewModel: JournalViewModel
     @Environment(\.dismiss) var dismiss
+    @Environment(\.tabBarHidden) var tabBarHidden
     
     @State private var title = ""
     @State private var date = Date()
+    @State private var hasSelectedDate = false
     @State private var place = ""
     @State private var impressions = ""
     @State private var selectedImage: UIImage?
@@ -19,57 +21,146 @@ struct JournalCreateView: View {
     }
     
     var body: some View {
-        NavigationView {
+        GeometryReader { geometry in
             ZStack {
-                Color.leafBackground
+                Image("mainPage")
+                    .resizable()
+                    .scaledToFill()
                     .ignoresSafeArea()
                 
-                VStack(spacing: 0) {
-                    ScrollView {
-                        VStack(spacing: 16) {
-                            CustomTextField(placeholder: "Enter Title", text: $title)
-                                .focused($focusedField, equals: .title)
+                ZStack {
+                    Image("gearListImg")
+                        .resizable()
+                        .scaledToFit()
+                    
+                    VStack(spacing: 0) {
+                        Text("Hiking")
+                            .font(.forestPack(size: 30))
+                            .foregroundColor(.white)
+                        Text("Journal")
+                            .font(.forestPack(size: 30))
+                            .foregroundColor(.white)
+                    }
+                }
+                .frame(width: 293, height: 103)
+                .position(x: 49 + 293/2, y: 69)
+                
+                Button(action: {
+                    dismiss()
+                }) {
+                    ZStack {
+                        Color.clear
+                            .frame(width: 59, height: 59)
+                            .cornerRadius(8)
+                        
+                        Image("backIcon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 59, height: 59)
+                    }
+                }
+                .position(x: 49, y: 69)
+                
+                ScrollView {
+                    VStack(spacing: 0) {
+                        VStack(spacing: 6) {
+                            HStack {
+                                Image("treeIcon")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 42, height: 42)
+                                TextField("", text: $title)
+                                    .foregroundColor(.textFieldText)
+                                    .font(.forestPack(size: 22))
+                                    .tracking(-0.32)
+                                    .placeholder(when: title.isEmpty) {
+                                        Text("Enter Title")
+                                            .foregroundColor(.textFieldText)
+                                            .font(.forestPack(size: 22))
+                                            .tracking(-0.32)
+                                            .lineHeight(21)
+                                    }
+                            }
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 12)
+                            .background(Color.textFieldBackground)
+                            .cornerRadius(12)
                             
                             Button(action: {
                                 showingDatePicker = true
                             }) {
                                 HStack {
-                                    Image(systemName: "tree.fill")
-                                        .foregroundColor(.darkGreen)
-                                    Text("Select Date")
+                                    Image("treeIcon")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 42, height: 42)
+                                    Text(hasSelectedDate ? formatDate(date) : "Select Date")
+                                        .foregroundColor(.textFieldText)
+                                        .font(.forestPack(size: 22))
+                                        .tracking(-0.32)
+                                        .lineHeight(21)
                                     Spacer()
                                     Image(systemName: "calendar")
                                         .foregroundColor(.darkGreen)
+                                        .font(.system(size: 20))
                                 }
-                                .padding()
-                                .background(Color.lightGreen)
-                                .cornerRadius(8)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 12)
+                                .background(Color.textFieldBackground)
+                                .cornerRadius(12)
                             }
+                            .buttonStyle(PlainButtonStyle())
                             
-                            CustomTextField(placeholder: "Enter Place", text: $place)
-                                .focused($focusedField, equals: .place)
+                            HStack {
+                                Image("treeIcon")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 42, height: 42)
+                                TextField("", text: $place)
+                                    .foregroundColor(.textFieldText)
+                                    .font(.forestPack(size: 22))
+                                    .tracking(-0.32)
+                                    .placeholder(when: place.isEmpty) {
+                                        Text("Enter Place")
+                                            .foregroundColor(.textFieldText)
+                                            .font(.forestPack(size: 22))
+                                            .tracking(-0.32)
+                                            .lineHeight(21)
+                                    }
+                            }
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 12)
+                            .background(Color.textFieldBackground)
+                            .cornerRadius(12)
                             
                             VStack(alignment: .leading, spacing: 8) {
                                 HStack {
-                                    Image(systemName: "tree.fill")
-                                        .foregroundColor(.darkGreen)
+                                    Image("treeIcon")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 42, height: 42)
                                     Text("Share Your Impressions")
-                                        .foregroundColor(.darkGreen)
+                                        .foregroundColor(.textFieldText)
+                                        .font(.forestPack(size: 22))
+                                        .tracking(-0.32)
+                                        .lineHeight(21)
                                 }
                                 TextEditor(text: $impressions)
                                     .frame(height: 100)
                                     .padding(8)
-                                    .background(Color.lightGreen)
-                                    .cornerRadius(8)
-                                    .focused($focusedField, equals: .impressions)
+                                    .background(Color.textFieldBackground)
+                                    .cornerRadius(12)
+                                    .foregroundColor(.textFieldText)
+                                    .font(.forestPack(size: 22))
+                                    .tracking(-0.32)
                             }
                             
                             Button(action: {
                                 showingImagePicker = true
                             }) {
                                 ZStack {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(Color.lightGreen)
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(Color.textFieldBackground)
                                         .frame(height: 150)
                                     
                                     if let selectedImage = selectedImage {
@@ -77,7 +168,7 @@ struct JournalCreateView: View {
                                             .resizable()
                                             .scaledToFill()
                                             .frame(height: 150)
-                                            .cornerRadius(8)
+                                            .cornerRadius(12)
                                     } else {
                                         Image(systemName: "plus")
                                             .font(.system(size: 40))
@@ -92,39 +183,51 @@ struct JournalCreateView: View {
                                     .font(.system(size: 16, weight: .semibold))
                                     .frame(maxWidth: .infinity)
                                     .padding()
-                                    .background(Color.forestGreen)
+                                    .background(Color.woodBrown)
                                     .cornerRadius(8)
                             }
                             .disabled(title.isEmpty)
                         }
-                        .padding()
-                    }
-                    .background(Color.white)
-                    .cornerRadius(16)
-                    .padding()
-                    
-                    if focusedField != nil {
-                        EmptyView()
-                    }
-                }
-            }
-            .navigationTitle("New Entry")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
+                        .padding(.top, 28)
+                        .padding(.bottom, 28)
+                        .padding(.leading, 21)
+                        .padding(.trailing, 21)
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .padding(.horizontal, 33)
+                        .padding(.top, 140)
+                        .padding(.bottom, 100)
                     }
                 }
-            }
-            .keyboardDismissButton()
-            .sheet(isPresented: $showingDatePicker) {
-                DatePickerSheet(date: $date, isPresented: $showingDatePicker)
-            }
-            .sheet(isPresented: $showingImagePicker) {
-                ImagePicker(selectedImage: $selectedImage)
+                
+                if showingDatePicker {
+                    DatePickerSheet(date: $date, isPresented: $showingDatePicker, onDateSelected: {
+                        hasSelectedDate = true
+                    })
+                        .environment(\.tabBarHidden, tabBarHidden)
+                        .zIndex(1000)
+                }
+                
+                if showingImagePicker {
+                    ImagePicker(selectedImage: $selectedImage)
+                        .zIndex(1000)
+                }
             }
         }
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
+        .onAppear {
+            tabBarHidden.wrappedValue = true
+        }
+        .onDisappear {
+            tabBarHidden.wrappedValue = false
+        }
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
     }
     
     private func saveEntry() {
@@ -137,148 +240,6 @@ struct JournalCreateView: View {
             imageData: imageData
         )
         viewModel.addEntry(newEntry)
-        dismiss()
-    }
-}
-
-struct JournalEditView: View {
-    @Binding var entry: JournalEntry
-    let viewModel: JournalViewModel
-    @Environment(\.dismiss) var dismiss
-    
-    @State private var title: String
-    @State private var date: Date
-    @State private var place: String
-    @State private var impressions: String
-    @State private var selectedImage: UIImage?
-    @State private var showingImagePicker = false
-    @State private var showingDatePicker = false
-    @FocusState private var focusedField: JournalCreateView.Field?
-    
-    init(entry: Binding<JournalEntry>, viewModel: JournalViewModel) {
-        self._entry = entry
-        self.viewModel = viewModel
-        _title = State(initialValue: entry.wrappedValue.title)
-        _date = State(initialValue: entry.wrappedValue.date)
-        _place = State(initialValue: entry.wrappedValue.place)
-        _impressions = State(initialValue: entry.wrappedValue.impressions)
-        if let imageData = entry.wrappedValue.imageData {
-            _selectedImage = State(initialValue: UIImage(data: imageData))
-        }
-    }
-    
-    var body: some View {
-        NavigationView {
-            ZStack {
-                Color.leafBackground
-                    .ignoresSafeArea()
-                
-                VStack(spacing: 0) {
-                    ScrollView {
-                        VStack(spacing: 16) {
-                            CustomTextField(placeholder: "Enter Title", text: $title)
-                                .focused($focusedField, equals: .title)
-                            
-                            Button(action: {
-                                showingDatePicker = true
-                            }) {
-                                HStack {
-                                    Image(systemName: "tree.fill")
-                                        .foregroundColor(.darkGreen)
-                                    Text("Select Date")
-                                    Spacer()
-                                    Image(systemName: "calendar")
-                                        .foregroundColor(.darkGreen)
-                                }
-                                .padding()
-                                .background(Color.lightGreen)
-                                .cornerRadius(8)
-                            }
-                            
-                            CustomTextField(placeholder: "Enter Place", text: $place)
-                                .focused($focusedField, equals: .place)
-                            
-                            VStack(alignment: .leading, spacing: 8) {
-                                HStack {
-                                    Image(systemName: "tree.fill")
-                                        .foregroundColor(.darkGreen)
-                                    Text("Share Your Impressions")
-                                        .foregroundColor(.darkGreen)
-                                }
-                                TextEditor(text: $impressions)
-                                    .frame(height: 100)
-                                    .padding(8)
-                                    .background(Color.lightGreen)
-                                    .cornerRadius(8)
-                                    .focused($focusedField, equals: .impressions)
-                            }
-                            
-                            Button(action: {
-                                showingImagePicker = true
-                            }) {
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(Color.lightGreen)
-                                        .frame(height: 150)
-                                    
-                                    if let selectedImage = selectedImage {
-                                        Image(uiImage: selectedImage)
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(height: 150)
-                                            .cornerRadius(8)
-                                    } else {
-                                        Image(systemName: "plus")
-                                            .font(.system(size: 40))
-                                            .foregroundColor(.darkGreen)
-                                    }
-                                }
-                            }
-                            
-                            Button(action: saveEntry) {
-                                Text("Save")
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 16, weight: .semibold))
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.forestGreen)
-                                    .cornerRadius(8)
-                            }
-                            .disabled(title.isEmpty)
-                        }
-                        .padding()
-                    }
-                    .background(Color.white)
-                    .cornerRadius(16)
-                    .padding()
-                }
-            }
-            .navigationTitle("Edit Entry")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-            }
-            .sheet(isPresented: $showingDatePicker) {
-                DatePickerSheet(date: $date, isPresented: $showingDatePicker)
-            }
-            .sheet(isPresented: $showingImagePicker) {
-                ImagePicker(selectedImage: $selectedImage)
-            }
-        }
-    }
-    
-    private func saveEntry() {
-        let imageData = selectedImage?.jpegData(compressionQuality: 0.8)
-        entry.title = title
-        entry.date = date
-        entry.place = place
-        entry.impressions = impressions
-        entry.imageData = imageData
-        viewModel.updateEntry(entry)
         dismiss()
     }
 }
