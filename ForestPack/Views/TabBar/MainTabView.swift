@@ -48,19 +48,15 @@ struct MainTabView: View {
                 .padding(.top, 16)
                 .padding(.bottom, 16)
                 
-                if selectedTab == 0 {
-                    GearListView()
-                        .hideTabBar($isTabBarHidden)
-                } else if selectedTab == 1 {
-                    TripPlanListView()
-                        .hideTabBar($isTabBarHidden)
-                } else if selectedTab == 2 {
-                    JournalListView()
-                        .hideTabBar($isTabBarHidden)
-                } else {
-                    SettingsView()
-                        .hideTabBar($isTabBarHidden)
+                Group {
+                    switch selectedTab {
+                    case 0: GearListView()
+                    case 1: TripPlanListView()
+                    case 2: JournalListView()
+                    default: SettingsView()
+                    }
                 }
+                .hideTabBar($isTabBarHidden)
                 
                 Spacer(minLength: 0)
                 
@@ -94,35 +90,23 @@ struct MainTabView: View {
 struct CustomTabBar: View {
     @Binding var selectedTab: Int
     
+    let tabs: [(active: String, inactive: String)] = [
+        ("hikingIconActive", "hikingIconInactive"),
+        ("routeIconActive", "routeIconInactive"),
+        ("editIconActive", "editIconInactive"),
+        ("settingsIconActive", "settingsIconInactive")
+    ]
+    
     var body: some View {
         HStack(spacing: 16) {
-            TabBarButton(
-                activeImageName: "hikingIconActive",
-                inactiveImageName: "hikingIconInactive",
-                isSelected: selectedTab == 0,
-                action: { selectedTab = 0 }
-            )
-            
-            TabBarButton(
-                activeImageName: "routeIconActive",
-                inactiveImageName: "routeIconInactive",
-                isSelected: selectedTab == 1,
-                action: { selectedTab = 1 }
-            )
-            
-            TabBarButton(
-                activeImageName: "editIconActive",
-                inactiveImageName: "editIconInactive",
-                isSelected: selectedTab == 2,
-                action: { selectedTab = 2 }
-            )
-            
-            TabBarButton(
-                activeImageName: "settingsIconActive",
-                inactiveImageName: "settingsIconInactive",
-                isSelected: selectedTab == 3,
-                action: { selectedTab = 3 }
-            )
+            ForEach(0..<tabs.count, id: \.self) { index in
+                TabBarButton(
+                    activeImageName: tabs[index].active,
+                    inactiveImageName: tabs[index].inactive,
+                    isSelected: selectedTab == index,
+                    action: { selectedTab = index }
+                )
+            }
         }
         .frame(maxWidth: .infinity)
         .frame(height: 73)

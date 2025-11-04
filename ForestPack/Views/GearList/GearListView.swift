@@ -56,7 +56,7 @@ struct GearListView: View {
                 }
             }
             
-            HStack(alignment: .center) {
+            HStack {
                 Button(action: {
                     isAddingNewItem = true
                     isTextFieldFocused = true
@@ -67,7 +67,6 @@ struct GearListView: View {
                         .frame(width: 62, height: 64)
                 }
                 .buttonStyle(PlainButtonStyle())
-                .padding(.leading, -8)
                 
                 Text("Add item")
                     .foregroundColor(.addItemText)
@@ -86,8 +85,8 @@ struct GearListView: View {
                     .font(.forestPack(size: 24))
                     .tracking(-0.32)
                     .lineHeight(21)
+                    .padding(.horizontal, 30)
                     .frame(height: 63)
-                    .frame(minWidth: 138)
                     .background(Color.deleteAllBackground)
                     .cornerRadius(12)
             }
